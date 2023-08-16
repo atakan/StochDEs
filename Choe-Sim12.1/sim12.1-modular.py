@@ -19,30 +19,32 @@ fig, (ax1, ax2) = plt.subplots(1, 2)
 np.random.seed(421)
 
 T = 3.0
-N = 512
+N = 8192
 X0 = 0.4
 
-t = np.linspace(0, T, N+1)
-dt = t[1]-t[0]
+Residuals = np.zeros(0) 
+for j in range(1200):
+    t = np.linspace(0, T, N+1)
+    dt = t[1]-t[0]
+    # our random increments, Gaussian variables with Var(X)=dt, E(X)=0
+    dW = np.sqrt(dt)*np.random.randn(N)
+    W = np.cumsum(np.concatenate([np.zeros(1),dW]))
+    #this is the exact solution
+    Exact = W**2 + X0
+    #ax1.plot(t, Exact, "k-", label='exact')
+    # numerical solution
+    t = np.linspace(0, T, N+1)
+    dt = t[1]-t[0]
+    W = np.zeros(N+1)
+    X = np.zeros(N+1)
+    X[0] = X0
+    for i in range(N):
+        W[i+1] = W[i] + dW[i]
+        X[i+1] = X[i] + 2*W[i]*dW[i] + dt
+    #ax1.plot(t, X, "r-", label=('Num. dt=%.2e' % (dt)))
+    Residuals = np.concatenate((Residuals, Exact-X))
 
-# our random increments, Gaussian variables with Var(X)=dt, E(X)=0
-dW = np.sqrt(dt)*np.random.randn(N)
-W = np.cumsum(np.concatenate([np.zeros(1),dW]))
-
-#this is the exact solution
-Exact = W**2 + X0
-ax1.plot(t, Exact, "k-", label='exact')
-
-# numerical solution
-t = np.linspace(0, T, N+1)
-dt = t[1]-t[0]
-W = np.zeros(N+1)
-X = np.zeros(N+1)
-X[0] = X0
-for i in range(N):
-    W[i+1] = W[i] + dW[i]
-    X[i+1] = X[i] + 2*W[i]*dW[i] + dt
-ax1.plot(t, X, "r-", label=('Num. dt=%.2e' % (dt)))
+ax2.hist(Residuals, bins=53)
 
 
 #numerical solution
