@@ -1,0 +1,5 @@
+# number of intervals vs. sigma of residuals 
+1024 9.4e-2
+2048 6.59e-2
+4096 4.62e-2
+8192 3.3e-2

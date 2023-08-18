@@ -23,7 +23,7 @@ N = 8192
 X0 = 0.4
 
 Residuals = np.zeros(0) 
-for j in range(1200):
+for j in range(1800):
     t = np.linspace(0, T, N+1)
     dt = t[1]-t[0]
     # our random increments, Gaussian variables with Var(X)=dt, E(X)=0
@@ -44,8 +44,17 @@ for j in range(1200):
     #ax1.plot(t, X, "r-", label=('Num. dt=%.2e' % (dt)))
     Residuals = np.concatenate((Residuals, Exact-X))
 
-ax2.hist(Residuals, bins=53)
+ax1.plot(t, Exact, "k-", label='exact')
+ax1.plot(t, X, "r-", label=('Num. dt=%.2e' % (dt)))
 
+numbins = 53
+n, bins, patches = ax2.hist(Residuals, bins=numbins, density=True)
+
+sigma = np.std(Residuals)
+mu = np.var(Residuals)
+y = ((1 / (np.sqrt(2 * np.pi) * sigma)) *
+     np.exp(-0.5 * (1 / sigma * (bins - mu))**2))
+ax2.plot(bins, y, '--', label='$\sigma=%.2e \mu=%.2e$' %(sigma, mu))
 
 #numerical solution
 ## this routine takes a bunch of normal distributed numbers and combines
@@ -94,5 +103,6 @@ ax2.hist(Residuals, bins=53)
 #ax1.ylabel("$X_t$")
 #ax1.xlabel("$t$")
 ax1.legend()
+ax2.legend()
 
 plt.show()
